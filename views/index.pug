@@ -1,0 +1,7 @@
+extends layout.pug
+
+block content
+	if user && !exists
+		include chat
+	else
+		include login

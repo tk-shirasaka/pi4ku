@@ -1,0 +1,13 @@
+.mdl-cell.mdl-cell--12-col
+	form(method='GET')
+		.mdl-textfield.mdl-js-textfield
+			input#user.mdl-textfield__input(name='user', value=user)
+			label.mdl-textfield__label(for='user') User Name
+
+.mdl-cell.mdl-cell--12-col
+	button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--accent Login
+
+if exists
+	#error.mdl-js-snackbar.mdl-snackbar.mdl-snackbar--active
+		.mdl-snackbar__text User already exists!
+		button.mdl-snackbar__action
