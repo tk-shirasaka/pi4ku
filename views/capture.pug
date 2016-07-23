@@ -1,0 +1,12 @@
+.row
+	.col.s12
+		.card.large
+			canvas#capture.col.s12.m12.l6.offset-l3(width=640, height=480)
+			.card-action
+				.col.s2
+					a.btn-floating.waves-effect.red.modal-trigger(href='#chat')
+						i.material-icons message
+				.col.s10
+					p.range-field
+						label(for='speed') Speed
+						input#speed(type='range', min=0, max=100, value=0)

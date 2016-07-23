@@ -1,56 +1,18 @@
-.mdl-cell.mdl-cell--3-col.mdl-card.mdl-shadow--2dp
-	.mdl-card__title
-		h2.mdl-card__title-text Chat
-	.mdl-card__supporting-text
-		ul#messages.mdl-list
-	.mdl-card__actions.mdl-card--border
-		.mdl-textfield.mdl-js-textfield
-			textarea#message.mdl-textfield__input(name='user')
-			label.mdl-textfield__label(for='message') Message
+#chat.modal
+	.modal-content
+		h4 Chat
+		ul#messages.collection
+	.modal-footer
+		.input-field.col.s12
+			textarea#message.materialize-textarea(name='user')
+			label(for='message') Message
+		.row
+			.col.s2
+				button#send.btn.waves-effect.waves-right Send
+			.col.s2.offset-s8
+				a.modal-action.modal-close.btn-flat.waves-effect.waves-right Close
 
-		button#send.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored Send
-
-.mdl-cell.mdl-cell--9-col.mdl-card.mdl-shadow--2dp
-	.mdl-card__title.mdl-card--expand
-	.mdl-card__actions
-		label(for='speed') Speed
-		input#speed.mdl-slider.mdl-js-slider(type='range', min=0, max=100, value=0)
-
-li#messageBox.mdl-list__item.mdl-list__item--two-line(style={display: 'none'})
-	span.mdl-list__item-primary-content
-		i.material-icons.mdl-list__item-avatar person
-		span.mdl-list__item-sub-title
-		span
-	span.mdl-list__item-secondary-content
-		a.mdl-list__item-secondary-action
-			i.material-icons star
-
-script.
-	var user = '#{user}',
-	    socket = io.connect('ws://test');
-	$('#noconnect').hide();
-	socket = io.connect('ws://test');
-	socket.emit('set user', user);
-	socket.on('chat message', (request) => {
-		var $messageBox = $('#messageBox').clone();
-		$messageBox.removeAttr('id');
-		$messageBox.show();
-		$messageBox.find('.mdl-list__item-primary-content span').each(function(i) {
-			i ? $(this).text(request.message) : $(this).text(`Name : ${request.user}`);
-		});
-
-		if (user != request.user) $messageBox.find('.mdl-list__item-secondary-content').hide();
-		$('#messages').append($messageBox);
-	});
-	socket.on('counter', (counter) => {
-		$('#counter').attr('data-badge', counter);
-	});
-
-	$('#logout').on('click', () => {
-		socket.disconnect();
-		location.href = '/';
-	});
-	$('#send').on('click', () => {
-		socket.emit('chat message', {user: user, message: $('#message').val()});
-		$('#message').val('');
-	});
+li#messageBox.collection-item.avatar(style={display: 'none'})
+	i.material-icons.circle person
+	span.title
+	p.message

@@ -2,6 +2,10 @@ extends layout.pug
 
 block content
 	if user && !exists
+		input#user(type='hidden', value=user)
+		include capture
 		include chat
+		script 
+			include js/main.js
 	else
 		include login

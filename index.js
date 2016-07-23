@@ -5,7 +5,6 @@ var push = require('socket.io-emitter')(settings.redis);
 var io = require('socket.io').listen(app.listen(80)).adapter(redis(settings.redis));
 var cv = require('opencv');
 var users = {};
-var counter = 0;
 
 app.set('view engine', 'pug');
 app.set('views', `${__dirname}/views`);
@@ -40,21 +39,17 @@ io.on('connection', (socket) => {
 
 try {
 	var camera = new cv.VideoCapture(0);
-	var window = new cv.NamedWindow('Video', 1);
+	camera.setWidth(640);
+	camera.setHeight(480);
 
 	setInterval(() => {
-		camera.read((e, im) => {
-			if (e) throw err;
-			console.log(im);
-		})
+		if (Object.keys(users).length) {
+			camera.read((e, img) => {
+				if (e) throw err;
+				push.emit('capture', img.toBuffer());
+			});
+		}
 	}, 1000);
 } catch (e) {
 	console.log('Error: ', e);
 }
-setInterval(() => {
-	if (Object.keys(users).length) {
-		push.emit('counter', ++counter);
-	} else {
-		counter = 0;
-	}
-}, 1000);
