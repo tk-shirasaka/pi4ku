@@ -1,16 +1,15 @@
-#chat.modal
-	.modal-content
+#chat.modal.modal-fixed-footer.bottom-sheet
+	.modal-content(style={height: 'calc(100% - 10em)'})
 		h4 Chat
 		ul#messages.collection
-	.modal-footer
-		.input-field.col.s12
-			textarea#message.materialize-textarea(name='user')
-			label(for='message') Message
+	.modal-footer(style={height: '10em'})
 		.row
-			.col.s2
-				button#send.btn.waves-effect.waves-right Send
-			.col.s2.offset-s8
+			.input-field.col.s8
+				textarea#message.materialize-textarea(name='user')
+				label(for='message') Message
+			.col.s4
 				a.modal-action.modal-close.btn-flat.waves-effect.waves-right Close
+				button#send.btn.waves-effect.waves-right Send
 
 li#messageBox.collection-item.avatar(style={display: 'none'})
 	i.material-icons.circle person
