@@ -4,7 +4,7 @@ var redis = require('socket.io-redis');
 var push = require('socket.io-emitter')(settings.redis);
 var io = require('socket.io').listen(app.listen(80)).adapter(redis(settings.redis));
 var cv = require('opencv');
-var users = {};
+var users = [];
 
 app.set('view engine', 'pug');
 app.set('views', `${__dirname}/views`);
@@ -12,29 +12,42 @@ app.get('/', (req, res) => {
 	res.render('index', {
 		title: 'Test',
 		user: req.query.user,
-		exists: !!users[req.query.user]
+		exists: !!users.find((val) => { if (val.name === req.query.user) return true; })
 	});
 });
 
 io.on('connection', (socket) => {
 
-	socket.on('chat message', (request) => {
-		io.emit('chat message', request);
+	var setAdmin = (id) => io.to(id).emit('admin');
+	var pushMessage = (message) => io.emit('chat', {user: socket.userInfo, message: message});
+	socket.on('chat', (message) => { pushMessage(message); });
+
+	socket.on('user', (user) => {
+		users.push(socket.userInfo = {id: socket.id, name: user, admin: !users.length});
+		pushMessage('Login');
+		if (socket.userInfo.admin) setAdmin(socket.id);
 	});
 
-	socket.on('set user', (user) => {
-		users[user] = socket.id
-		io.emit('chat message', {user: user, message: 'Login'});
-	});
+	socket.on('speed', (speed) => {
+		if (socket.userInfo.admin) io.emit('speed', speed);
+	})
+
+	socket.on('degree', (degree) => {
+		if (socket.userInfo.admin) io.emit('degree', degree);
+	})
 
 	socket.on('disconnect', () => {
-		for (var user in users) {
-			if (users[user] !== socket.id) continue;
-			delete users[user];
-			io.emit('chat message', {user: user, message: 'Logout'});
-			break;
-		}
-	})
+		users.find((val, index, users) => {
+			if (val.id !== socket.id) return ;
+			if (!index && users.length > 1) {
+				setAdmin(users[1].id);
+				users[1].admin = true;
+			}
+			pushMessage('Logout');
+			users.splice(index, 1);
+			return true;
+		});
+	});
 });
 
 try {
@@ -43,7 +56,7 @@ try {
 	camera.setHeight(480);
 
 	setInterval(() => {
-		if (Object.keys(users).length) {
+		if (users.length) {
 			camera.read((e, img) => {
 				if (e) throw err;
 				push.emit('capture', img.toBuffer());
