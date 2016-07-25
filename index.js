@@ -1,8 +1,8 @@
-var settings = {redis: {host: 'redis', port: 6379}};
+var settings = require('./settings');
 var app = require('express')();
-var redis = require('socket.io-redis');
+var redis = require('socket.io-redis')(settings.redis);
 var push = require('socket.io-emitter')(settings.redis);
-var io = require('socket.io').listen(app.listen(80)).adapter(redis(settings.redis));
+var io = require('socket.io').listen(app.listen(settings.listen)).adapter(redis);
 var cv = require('opencv');
 var users = [];
 
@@ -19,13 +19,25 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
 
 	var setAdmin = (id) => io.to(id).emit('admin');
+	var findUserInfo = (id) => (users.find((val, index, users) => { if (id === val.id) return true}));
 	var pushMessage = (message) => io.emit('chat', {user: socket.userInfo, message: message});
 	socket.on('chat', (message) => { pushMessage(message); });
 
 	socket.on('user', (user) => {
-		users.push(socket.userInfo = {id: socket.id, name: user, admin: !users.length});
+		users.push(socket.userInfo = {id: socket.id, name: user, admin: !users.length, expired: false});
 		pushMessage('Login');
 		if (socket.userInfo.admin) setAdmin(socket.id);
+	});
+
+	socket.on('admin', (socketid) => {
+		var userInfo = findUserInfo(socketid);
+		if (userInfo) {
+			socket.userInfo.admin = false;
+			userInfo.admin = true;
+			setAdmin(socketid);
+		} else {
+			setAdmin(socket.id);
+		}
 	});
 
 	socket.on('speed', (speed) => {
@@ -37,23 +49,23 @@ io.on('connection', (socket) => {
 	})
 
 	socket.on('disconnect', () => {
-		users.find((val, index, users) => {
-			if (val.id !== socket.id) return ;
-			if (!index && users.length > 1) {
-				setAdmin(users[1].id);
-				users[1].admin = true;
-			}
+		var userInfo = findUserInfo(socket.id),
+		    index = -1;
+
+		if (userInfo) {
+			index = users.indexOf(userInfo);
+			socket.userInfo.expired = true;
 			pushMessage('Logout');
 			users.splice(index, 1);
-			return true;
-		});
+			if (userInfo.admin && users.length) setAdmin(users[0].id)
+		}
 	});
 });
 
 try {
-	var camera = new cv.VideoCapture(0);
-	camera.setWidth(640);
-	camera.setHeight(480);
+	var camera = new cv.VideoCapture(settings.camera.device);
+	camera.setWidth(settings.camera.width);
+	camera.setHeight(settings.camera.height);
 
 	setInterval(() => {
 		if (users.length) {
@@ -62,7 +74,7 @@ try {
 				push.emit('capture', img.toBuffer());
 			});
 		}
-	}, 1000);
+	}, 1000 / settings.camera.fps);
 } catch (e) {
 	console.log('Error: ', e);
 }

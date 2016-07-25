@@ -11,7 +11,9 @@
 				a.modal-action.modal-close.btn-flat.waves-effect.waves-right Close
 				button#send.btn.waves-effect.waves-right Send
 
-li#messageBox.collection-item.avatar(style={display: 'none'})
-	i.material-icons.circle person
+li#messageBox.collection-item.avatar.hide
+	i.material-icons.circle.icon person
 	span.title
 	p.message
+	a.secondary-content.change-admin(href='#!')
+		i.material-icons lock

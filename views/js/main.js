@@ -1,25 +1,34 @@
-var user = $('#user').val();
+var user = $('#user').val(),
+    admin = false,
     socket = io.connect('ws://{host}');
 
 socket.emit('user', user);
 socket.on('admin', () => {
-	$('#header').children().addClass('indigo');
+	admin = true;
+	$('#header nav').addClass('indigo');
 	$('#speed').prop('disabled', false);
 	$('#degree').prop('disabled', false);
+	$('.change-admin').removeClass('hide');
 	Materialize.toast('You are admin', 3000);
 })
 socket.on('chat', (request) => {
-	var $messageBox = $('#messageBox').clone();
+	var $messageBox = $('#messageBox').clone(true);
+	$('#messages').append($messageBox);
 	$messageBox.removeAttr('id');
-	$messageBox.show();
+	$messageBox.removeClass('hide');
+	$messageBox.find('.change-admin').data('socketid', request.user.id);
 	$messageBox.find('.title').text(request.user.name);
 	$messageBox.find('.message').text(request.message);
 
-	(user == request.user.name)
-		? $messageBox.find('i').addClass('red')
-		: Materialize.toast(`${request.user.name} : ${request.message}`, 3000);
-	if (request.user.admin) $messageBox.find('i').text('lock');
-	$('#messages').append($messageBox);
+	if (user === request.user.name) {
+		$messageBox.find('.icon').addClass('red');
+		$messageBox.find('.change-admin').remove()
+	} else {
+		Materialize.toast(`${request.user.name} : ${request.message}`, 3000);
+		if (!admin) $messageBox.find('.change-admin').addClass('hide');
+	}
+	if (request.user.expired) $('#messages .change-admin').remove();
+	if (request.user.admin) $messageBox.find('.icon').text('lock');
 });
 socket.on('speed', (speed) => {
 	$('#speed').val(speed);
@@ -55,6 +64,16 @@ $('#logout').on('click', () => {
 $('#send').on('click', () => {
 	socket.emit('chat', $('#message').val());
 	$('#message').val('');
+});
+$('.change-admin').on('click', function() {
+	admin = false;
+	$('#header nav').removeClass('indigo');
+	$('#speed').prop('disabled', true);
+	$('#degree').prop('disabled', true);
+	$('.change-admin').addClass('hide');
+	Materialize.toast('You are normal user', 3000);
+    console.log($(this).data('socketid'));
+	socket.emit('admin', $(this).data('socketid'));
 });
 $('#speed').on('change', () => {
 	socket.emit('speed', $('#speed').val());
