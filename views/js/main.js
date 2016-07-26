@@ -13,7 +13,7 @@ socket.on('admin', () => {
 })
 socket.on('chat', (request) => {
 	var $messageBox = $('#messageBox').clone(true);
-	$('#messages').append($messageBox);
+	$('#messages').prepend($messageBox);
 	$messageBox.removeAttr('id');
 	$messageBox.removeClass('hide');
 	$messageBox.find('.change-admin').data('socketid', request.user.id);
@@ -21,6 +21,7 @@ socket.on('chat', (request) => {
 	$messageBox.find('.message').text(request.message);
 
 	if (user === request.user.name) {
+		$messageBox.addClass('owner');
 		$messageBox.find('.icon').addClass('red');
 		$messageBox.find('.change-admin').remove()
 	} else {
@@ -28,7 +29,7 @@ socket.on('chat', (request) => {
 		if (!admin) $messageBox.find('.change-admin').addClass('hide');
 	}
 	if (request.user.expired) $('#messages .change-admin').remove();
-	if (request.user.admin) $messageBox.find('.icon').text('lock');
+	if (request.user.admin) $messageBox.find('.icon').addClass('blue');
 });
 socket.on('speed', (speed) => {
 	$('#speed').val(speed);
@@ -72,7 +73,6 @@ $('.change-admin').on('click', function() {
 	$('#degree').prop('disabled', true);
 	$('.change-admin').addClass('hide');
 	Materialize.toast('You are normal user', 3000);
-    console.log($(this).data('socketid'));
 	socket.emit('admin', $(this).data('socketid'));
 });
 $('#speed').on('change', () => {

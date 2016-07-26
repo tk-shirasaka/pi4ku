@@ -1,0 +1,74 @@
+#chat .modal-content {
+	height: calc(100% - 10em);
+}
+
+#chat .modal-footer {
+	height: 10em;
+}
+
+#chat #messages {
+	border: none;
+}
+
+#chat #messages li {
+	padding-left: 5em;
+	padding-right: 1em;
+	border: none;
+	background-color: transparent;
+}
+
+#chat #messages li .icon {
+	width: 2em;
+	height: 2em;
+	left: 15px;
+	line-height: 2em;
+}
+
+#chat #messages li .title {
+	position: absolute;
+	left: 15px;
+	top: 3em;
+}
+
+#chat #messages li .message {
+	background-color: #8ef;
+	border-radius: 0.5em;
+	padding: 0.5em 1em;
+	margin: 0;
+	min-height: 4em;
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+#chat #messages li .message:before {
+	position: absolute;
+	content: '';
+	left: 3.4em;
+	border: 0.8em solid transparent;
+	border-right: 1em solid #8ef;
+}
+
+#chat #messages li.owner {
+	padding-left: 1em;
+	padding-right: 5em;
+}
+
+#chat #messages li.owner .icon {
+	left: auto;
+	right: 15px;
+}
+
+#chat #messages li.owner .title {
+	left: auto;
+	right: 15px;
+}
+
+#chat #messages li.owner .message {
+	text-align: right;
+}
+
+#chat #messages li.owner .message:before {
+	left: auto;
+	right: 3.4em;
+	border-left: 1em solid #8ef;
+	border-right: 0.8em solid transparent;
+}

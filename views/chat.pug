@@ -1,19 +1,19 @@
 #chat.modal.modal-fixed-footer.bottom-sheet
-	.modal-content(style={height: 'calc(100% - 10em)'})
+	.modal-content
 		h4 Chat
+			i.modal-action.modal-close.material-icons.right close
 		ul#messages.collection
-	.modal-footer(style={height: '10em'})
+	.modal-footer
 		.row
 			.input-field.col.s8
 				textarea#message.materialize-textarea(name='user')
 				label(for='message') Message
 			.col.s4
-				a.modal-action.modal-close.btn-flat.waves-effect.waves-right Close
 				button#send.btn.waves-effect.waves-right Send
 
 li#messageBox.collection-item.avatar.hide
 	i.material-icons.circle.icon person
 	span.title
-	p.message
+	pre.message
 	a.secondary-content.change-admin(href='#!')
 		i.material-icons lock
