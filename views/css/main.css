@@ -42,6 +42,7 @@
 #chat #messages li .message:before {
 	position: absolute;
 	content: '';
+	height: 0;
 	left: 3.4em;
 	border: 0.8em solid transparent;
 	border-right: 1em solid #8ef;
