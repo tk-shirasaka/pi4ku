@@ -10,7 +10,7 @@ socket.on('admin', () => {
 	$('#degree').prop('disabled', false);
 	$('.change-admin').removeClass('hide');
 	Materialize.toast('You are admin', 3000);
-})
+});
 socket.on('chat', (request) => {
 	var $messageBox = $('#messageBox').clone(true);
 	$('#messages').prepend($messageBox);
@@ -33,10 +33,10 @@ socket.on('chat', (request) => {
 });
 socket.on('speed', (speed) => {
 	$('#speed').val(speed);
-})
+});
 socket.on('degree', (degree) => {
 	$('#degree').val(degree);
-})
+});
 socket.on('capture', (capture) => {
 	var data = new Uint8Array(capture),
 	    image = new Image();
@@ -55,6 +55,7 @@ socket.on('capture', (capture) => {
 });
 
 $('#logout').on('click', () => {
+	$(window).off('beforeunload');
 	socket.disconnect();
 	location.href = '/';
 });
@@ -73,10 +74,11 @@ $('.change-admin').on('click', function() {
 });
 $('#speed').on('change', () => {
 	socket.emit('speed', $('#speed').val());
-})
+});
 $('#degree').on('change', () => {
 	socket.emit('degree', $('#degree').val());
-})
+});
 $(document).ready(() => {
 	$('.modal-trigger').leanModal();
-})
+});
+$(window).on('beforeunload', function(e) {return true; });

@@ -1,10 +1,11 @@
-.card-panel
-	.row
-		form.col.s12.m5(method='get')
+.row
+	.col.s12.m6.offset-m3
+		.card-panel
 			.row
-				.input-field.col.s12
-					i.material-icons.prefix account_circle
-					input#user.validate(name='user', value=user, type='text', class=(exists? 'invalid' : ''))
-					label(for='user', data-error='Already exists!') User Name
-				.col.s2.push-s8
-					button.btn.waves-effect.waves-right Login
+				form.col.s12(method='get')
+					.input-field.col.s12
+						i.material-icons.prefix account_circle
+						input#user.validate(name='user', value=user, type='text', class=(exists? 'invalid' : ''))
+						label(for='user', data-error='Already exists!') User Name
+					.col.s2.push-s8
+						button.btn.waves-effect.waves-right Login
