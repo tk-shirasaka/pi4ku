@@ -38,15 +38,11 @@ socket.on('degree', (degree) => {
 	$('#degree').val(degree);
 })
 socket.on('capture', (capture) => {
-	var binary = '',
+	var data = new Uint8Array(capture),
 	    image = new Image();
 	    canvas = $('#capture')[0];
 
-	capture = new Uint8Array(capture);
-	for (var i = 0; i < capture.byteLength; i++) {
-		binary += String.fromCharCode(capture[i]);
-	}
-	image.src = 'data:image/jpeg;base64,' + window.btoa(binary);
+	image.src = URL.createObjectURL(new Blob([data], {type: 'image/jpg'}));
 	image.onload = () => {
 		try {
 			if (canvas.getContext) {
