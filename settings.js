@@ -9,3 +9,6 @@ exports.camera = {
 	height: 480,
 	fps: 1
 };
+exports.gpio = {
+	servo: 12
+};

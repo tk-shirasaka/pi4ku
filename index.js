@@ -4,7 +4,18 @@ var redis = require('socket.io-redis')(settings.redis);
 var push = require('socket.io-emitter')(settings.redis);
 var io = require('socket.io').listen(app.listen(settings.listen)).adapter(redis);
 var cv = require('opencv');
+var gpio = require('node-gpio');
+var servo = new gpio.PWM(settings.gpio.servo);
+var changeDegree = (degree) => {
+	servo.dutyCycle = (1.0 + degree / 180.0) / 20 * 100;
+	servo.start();
+	servo.stop();
+}
 var users = [];
+
+servo.open();
+servo.setMode(gpio.OUT);
+servo.frequency = 50;
 
 app.set('view engine', 'pug');
 app.set('views', `${__dirname}/views`);
@@ -45,7 +56,10 @@ io.on('connection', (socket) => {
 	})
 
 	socket.on('degree', (degree) => {
-		if (socket.userInfo.admin) io.emit('degree', degree);
+		if (socket.userInfo.admin) {
+			io.emit('degree', degree);
+			changeDegree(degree);
+		}
 	})
 
 	socket.on('disconnect', () => {
